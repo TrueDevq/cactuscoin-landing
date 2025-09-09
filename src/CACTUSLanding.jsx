@@ -5,9 +5,9 @@ export default function CACTUSLanding() {
     name: "CACTUScoin",
     symbol: "CACT",
     address: "EQBC7NMrOBIZFX_mB8QqQozG9wg04BcOd_P-HvtFy7bssSnN",
-    // Используем локальное изображение, так как внешний сервер недоступен
-    image: "/cactus-logo.svg",
-    // Резервное изображение если основное не загрузится
+    // Оригинальный логотип CACTUScoin
+    image: "https://tokens.gas111.com/images/a20b343428424e6786aedddec21c2d49.png",
+    // Простой резервный логотип если оригинал не загрузится
     fallbackImage: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%2310b981'/%3E%3Ctext x='48' y='58' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3ECACT%3C/text%3E%3C/svg%3E",
   };
 
