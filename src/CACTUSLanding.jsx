@@ -11,6 +11,9 @@ export default function CACTUSLanding() {
     fallbackImage: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%2310b981'/%3E%3Ctext x='48' y='58' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3ECACT%3C/text%3E%3C/svg%3E",
   };
 
+  // Отладочная информация
+  console.log('Token image path:', TOKEN.image);
+
   const [copied, setCopied] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -24,51 +27,24 @@ export default function CACTUSLanding() {
     }
   };
 
-  // Компонент для безопасной загрузки изображения
+  // Простой компонент изображения с fallback
   const SafeImage = ({ src, alt, className, fallback }) => {
-    const [imgLoaded, setImgLoaded] = useState(false);
     const [imgError, setImgError] = useState(false);
-    const [showFallback, setShowFallback] = useState(false);
-
-    // Таймер для показа fallback если изображение долго не загружается
-    useState(() => {
-      const timer = setTimeout(() => {
-        if (!imgLoaded && !imgError) {
-          setShowFallback(true);
-        }
-      }, 3000); // 3 секунды ожидания
-
-      return () => clearTimeout(timer);
-    }, [imgLoaded, imgError]);
-
-    const currentSrc = (imgError || showFallback) ? fallback : src;
 
     return (
-      <div className="relative">
-        {!imgLoaded && !showFallback && (
-          <div className={`${className} bg-neutral-800 animate-pulse flex items-center justify-center rounded-2xl`}>
-            <div className="text-emerald-400 text-xs font-bold">CACT</div>
-          </div>
-        )}
-        <img 
-          src={currentSrc}
-          alt={alt}
-          className={`${className} ${!imgLoaded && !showFallback ? 'opacity-0 absolute' : 'transition-opacity duration-300'}`}
-          onError={() => {
-            if (currentSrc !== fallback) {
-              setImgError(true);
-            }
-            setImgLoaded(true);
-          }}
-          onLoad={() => {
-            setImgLoaded(true);
-            setImgError(false);
-          }}
-          loading="eager"
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer"
-        />
-      </div>
+      <img 
+        src={imgError ? fallback : src}
+        alt={alt}
+        className={className}
+        onError={() => {
+          console.log('Image failed to load:', src);
+          setImgError(true);
+        }}
+        onLoad={() => {
+          console.log('Image loaded successfully:', src);
+          setImgError(false);
+        }}
+      />
     );
   };
 
@@ -163,7 +139,10 @@ export default function CACTUSLanding() {
             {/* Logo - right side */}
             <div className="order-1 md:order-2 relative flex justify-center">
               <div className="absolute -inset-4 sm:-inset-6 rounded-full bg-emerald-500/10 blur-3xl" />
-              <SafeImage src={TOKEN.image} alt="CACTUScoin" className="relative h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-80 lg:w-80 xl:h-96 xl:w-96 rounded-2xl shadow-2xl ring-1 ring-neutral-800 object-contain" fallback={TOKEN.fallbackImage} />
+              <img src={TOKEN.image} alt="CACTUScoin" className="relative h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-80 lg:w-80 xl:h-96 xl:w-96 rounded-2xl shadow-2xl ring-1 ring-neutral-800 object-contain" onError={(e) => {
+                console.log('Main image failed to load:', TOKEN.image);
+                e.target.src = TOKEN.fallbackImage;
+              }} onLoad={() => console.log('Main image loaded:', TOKEN.image)} />
             </div>
           </div>
 
