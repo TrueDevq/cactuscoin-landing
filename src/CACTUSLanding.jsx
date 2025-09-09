@@ -6,10 +6,13 @@ export default function CACTUSLanding() {
     symbol: "CACT",
     address: "EQBC7NMrOBIZFX_mB8QqQozG9wg04BcOd_P-HvtFy7bssSnN",
     image: "https://tokens.gas111.com/images/a20b343428424e6786aedddec21c2d49.png",
+    // Резервное изображение если основное не загрузится
+    fallbackImage: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%2310b981'/%3E%3Ctext x='48' y='58' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3ECACT%3C/text%3E%3C/svg%3E",
   };
 
   const [copied, setCopied] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const copy = async (text) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -20,13 +23,25 @@ export default function CACTUSLanding() {
     }
   };
 
+  // Компонент для безопасной загрузки изображения
+  const SafeImage = ({ src, alt, className, fallback }) => (
+    <img 
+      src={imageError ? fallback : src}
+      alt={alt}
+      className={className}
+      onError={() => setImageError(true)}
+      onLoad={() => setImageError(false)}
+      loading="lazy"
+    />
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-900 to-neutral-950 text-neutral-100">
       {/* Nav */}
       <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-neutral-900/60 bg-neutral-900/70 border-b border-neutral-800">
         <div className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
-            <img src={TOKEN.image} alt="CACT logo" className="h-7 w-7 sm:h-8 sm:w-8 rounded" />
+            <SafeImage src={TOKEN.image} alt="CACT logo" className="h-7 w-7 sm:h-8 sm:w-8 rounded" fallback={TOKEN.fallbackImage} />
             <span className="font-semibold tracking-wide text-sm sm:text-base">{TOKEN.name} · ${TOKEN.symbol}</span>
           </div>
           
@@ -111,7 +126,7 @@ export default function CACTUSLanding() {
             {/* Logo - right side */}
             <div className="order-1 md:order-2 relative flex justify-center">
               <div className="absolute -inset-4 sm:-inset-6 rounded-full bg-emerald-500/10 blur-3xl" />
-              <img src={TOKEN.image} alt="CACTUScoin" className="relative h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-80 lg:w-80 xl:h-96 xl:w-96 rounded-2xl shadow-2xl ring-1 ring-neutral-800 object-contain" />
+              <SafeImage src={TOKEN.image} alt="CACTUScoin" className="relative h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-80 lg:w-80 xl:h-96 xl:w-96 rounded-2xl shadow-2xl ring-1 ring-neutral-800 object-contain" fallback={TOKEN.fallbackImage} />
             </div>
           </div>
 
@@ -212,7 +227,7 @@ export default function CACTUSLanding() {
           <div className="flex flex-col gap-4">
             {/* Logo and name */}
             <div className="flex items-center justify-center md:justify-start gap-2 sm:gap-3">
-              <img src={TOKEN.image} alt="CACT logo" className="h-5 w-5 sm:h-6 sm:w-6 rounded" />
+              <SafeImage src={TOKEN.image} alt="CACT logo" className="h-5 w-5 sm:h-6 sm:w-6 rounded" fallback={TOKEN.fallbackImage} />
               <div className="text-sm sm:text-base">{TOKEN.name} · ${TOKEN.symbol}</div>
             </div>
             
