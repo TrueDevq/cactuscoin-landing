@@ -5,9 +5,10 @@ export default function CACTUSLanding() {
     name: "CACTUScoin",
     symbol: "CACT",
     address: "EQBC7NMrOBIZFX_mB8QqQozG9wg04BcOd_P-HvtFy7bssSnN",
-    image: "https://tokens.gas111.com/images/a20b343428424e6786aedddec21c2d49.png",
+    // Используем локальное изображение, так как внешний сервер недоступен
+    image: "/cactus-logo.svg",
     // Резервное изображение если основное не загрузится
-    fallbackImage: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%2310b981'/%3E%3Ctext x='48' y='58' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3ECACT%3C/text%3E%3C/svg%3E",
+    fallbackImage: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%2310b981'/%3E%3Ctext x='48' y='58' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3ECACT%3C/text%3E%3C/svg%3E",
   };
 
   const [copied, setCopied] = useState(false);
@@ -24,16 +25,52 @@ export default function CACTUSLanding() {
   };
 
   // Компонент для безопасной загрузки изображения
-  const SafeImage = ({ src, alt, className, fallback }) => (
-    <img 
-      src={imageError ? fallback : src}
-      alt={alt}
-      className={className}
-      onError={() => setImageError(true)}
-      onLoad={() => setImageError(false)}
-      loading="lazy"
-    />
-  );
+  const SafeImage = ({ src, alt, className, fallback }) => {
+    const [imgLoaded, setImgLoaded] = useState(false);
+    const [imgError, setImgError] = useState(false);
+    const [showFallback, setShowFallback] = useState(false);
+
+    // Таймер для показа fallback если изображение долго не загружается
+    useState(() => {
+      const timer = setTimeout(() => {
+        if (!imgLoaded && !imgError) {
+          setShowFallback(true);
+        }
+      }, 3000); // 3 секунды ожидания
+
+      return () => clearTimeout(timer);
+    }, [imgLoaded, imgError]);
+
+    const currentSrc = (imgError || showFallback) ? fallback : src;
+
+    return (
+      <div className="relative">
+        {!imgLoaded && !showFallback && (
+          <div className={`${className} bg-neutral-800 animate-pulse flex items-center justify-center rounded-2xl`}>
+            <div className="text-emerald-400 text-xs font-bold">CACT</div>
+          </div>
+        )}
+        <img 
+          src={currentSrc}
+          alt={alt}
+          className={`${className} ${!imgLoaded && !showFallback ? 'opacity-0 absolute' : 'transition-opacity duration-300'}`}
+          onError={() => {
+            if (currentSrc !== fallback) {
+              setImgError(true);
+            }
+            setImgLoaded(true);
+          }}
+          onLoad={() => {
+            setImgLoaded(true);
+            setImgError(false);
+          }}
+          loading="eager"
+          crossOrigin="anonymous"
+          referrerPolicy="no-referrer"
+        />
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-900 to-neutral-950 text-neutral-100">
